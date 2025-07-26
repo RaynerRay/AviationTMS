@@ -4,6 +4,7 @@ import { School, User } from "@/types/types";
 import { api, getSchoolById } from "./schools";
 import { cookies } from "next/headers";
 
+
 export async function loginUser(data: { email: string; password: string }) {
   try {
     const response = await api.post("/login", data);

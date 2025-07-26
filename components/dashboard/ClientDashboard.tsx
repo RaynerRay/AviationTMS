@@ -19,7 +19,7 @@ export function ClientDashboard({ user, children }: Props) {
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
   return (
-    <div className="flex min-h-screen bg-gray-100 dark:bg-gray-900 overflow-hidden relative">
+    <div className="flex min-h-screen bg-white dark:bg-gray-900 overflow-hidden relative">
       {/* Sidebar */}
       <div
         className={clsx(
@@ -51,7 +51,7 @@ export function ClientDashboard({ user, children }: Props) {
           onSidebarToggle={toggleSidebar} 
         />
 
-        <main className="flex-1 p-4 overflow-y-auto mt-4">{children}</main>
+        <main className="flex-1">{children}</main>
       </div>
     </div>
   );

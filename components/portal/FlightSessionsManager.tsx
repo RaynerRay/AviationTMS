@@ -2,23 +2,20 @@
 import React, { useState, useEffect } from "react";
 import { 
   Plane, 
-  Clock, 
-  Users, 
-  Sun, 
-  Moon, 
-  GaugeCircle, 
+ 
   MessageCircle, 
   FileClock,
   ChevronDown,
   ChevronUp,
   Search,
   Plus,
-  List,
-  Edit,
+
   ArrowLeft
 } from "lucide-react";
-import FlightSessionForm from "../dashboard/forms/operations/FlightSessions";
+
 import { AircraftModel, CreateFlightSession, FlightSessionModel, SessionStatus, SessionType, SimulatorModel, Student, Teacher } from "@/types/types";
+import FlightSessionForm from "../dashboard/forms/operations/FlightSessionForm";
+
 
 
 interface CollapsibleSectionProps {
@@ -263,7 +260,7 @@ const FlightSessionsManager: React.FC<FlightSessionsManagerProps> = ({
             <div className="overflow-y-auto h-[calc(100vh-80px)]">
               <div className="p-6">
                 <FlightSessionForm
-                  onSubmit={onSubmit}
+                  onSubmit={async (data) => onSubmit(data)}
                   aircrafts={aircrafts}
                   students={students}
                   teachers={teachers}
@@ -348,7 +345,7 @@ const FlightSessionsManager: React.FC<FlightSessionsManagerProps> = ({
                 }
                 defaultOpen={true}
               >
-                <FormInput label="Total Flight Time" value={selectedSession.totalFlightTime} type="number" />
+                {/* <FormInput label="Total Flight Time" value={selectedSession.totalFlightTime} type="number" /> */}
                 <FormInput label="Day Hours" value={selectedSession.dayHours} type="number" />
                 <FormInput label="Night Hours" value={selectedSession.nightHours} type="number" />
                 <FormInput label="Instrument Hours" value={selectedSession.instrumentHours} type="number" />

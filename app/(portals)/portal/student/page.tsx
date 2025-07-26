@@ -1,4 +1,4 @@
-import RoleBasedWrapper from "@/components/RoleBasedWrapper";
+
 import React from "react";
 
 export default function page() {

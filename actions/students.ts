@@ -1,6 +1,5 @@
 "use server";
 
-import { ContactProps } from "@/components/frontend/contact-us";
 import { api } from "./schools";
 import axios from "axios";
 import {
@@ -74,7 +73,7 @@ export async function getAllStudents(schoolId: string) {
     const response = await api.get(`/students/school/${schoolId}`);
     
     const students = response.data;
-    revalidatePath("/dashboard/students");
+    // revalidatePath("/dashboard/students");
     return students as Student[];
    
   } catch (error) {

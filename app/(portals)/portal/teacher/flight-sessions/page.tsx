@@ -1,6 +1,5 @@
 import React from "react";
 import { getServerSchool } from "@/actions/auth";
-import FlightSessionForm from "@/components/dashboard/forms/operations/FlightSessions";
 import { getAircrafts } from "@/actions/aircrafts";
 import { getAllStudents } from "@/actions/students";
 import { getSimulators } from "@/actions/simulator";
@@ -17,6 +16,7 @@ export default async function page() {
   const students = (await getAllStudents(school?.id ?? "")) || [];
   const teachers = (await getAllTeachers(school?.id ?? "")) || [];
   const simulators = (await getSimulators(school?.id ?? "")) || [];
+
   
   // Fetch existing flight sessions
   const flightSessions = (await getFlightSessions(school?.id ?? "")) || [];
@@ -32,7 +32,7 @@ export default async function page() {
       };
       
       await createFlightSession(flightSessionData);
-      redirect("/dashboard/flights/sessions");
+      redirect("/portal/teacher/flight-sessions");
     } catch (error) {
       console.error("Error creating flight session:", error);
       // Handle error appropriately - you might want to show a toast or redirect to an error page

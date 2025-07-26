@@ -5,265 +5,149 @@ import { format } from "date-fns";
 import {
   Users,
   UserCog,
-  DollarSign,
   UserCircle,
   CheckCircle,
-  Clock,
+  BarChart,
+  LineChart,
   MapPin,
+  DollarSign,
 } from "lucide-react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { AdminStats } from "@/actions/analytics";
-import { Badge } from "../ui/badge";
 import useSchoolStore from "@/store/school";
 
-export default function DashboardDetails({
-  analytics,
-}: {
+type DashboardDetailsProps = {
   analytics: AdminStats;
-}) {
-  const stats = [
-    {
-      title: "Students",
-      count: analytics.students ?? 0,
-      href: "/dashboard/students",
-      icon: Users,
-      color: "bg-blue-500",
-      textColor: "text-blue-500",
-    },
-    {
-      title: "Operations",
-      count: analytics.students ?? 0,
-      href: "/dashboard/operations",
-      icon: Users,
-      color: "bg-blue-500",
-      textColor: "text-blue-500",
-    },
-    {
-      title: "Teachers",
-      count: analytics.teachers ?? 0,
-      href: "/dashboard/users/teachers",
-      icon: UserCog,
-      color: "bg-purple-500",
-      textColor: "text-purple-500",
-    },
-    {
-      title: "Parents",
-      count: analytics.parents ?? 0,
-      href: "/dashboard/users/parents",
-      icon: UserCircle,
-      color: "bg-green-500",
-      textColor: "text-green-500",
-    },
-    {
-      title: "Fees Paid",
-      count: analytics.totalPaid ?? 0,
-      href: "/dashboard/finances/fees",
-      icon: CheckCircle,
-      color: "bg-emerald-500",
-      textColor: "text-emerald-500",
-      prefix: "$",
-    },
-    // {
-    //   title: "Pending Fees",
-    //   count: analytics.totalPending ?? 0,
-    //   href: "/dashboard/finances/pending",
-    //   icon: Clock,
-    //   color: "bg-amber-500",
-    //   textColor: "text-amber-500",
-    //   prefix: "$",
-    // },
+};
+
+export default function DashboardDetails({ analytics }: DashboardDetailsProps) {
+  const { school } = useSchoolStore();
+  const recentStudents = analytics.recentStudents ?? [];
+  const recentEvents = analytics.recentEvents ?? [];
+
+  const salesSummary = [
+    { title: "Today's Sales", value: "$1K", change: "+8% from yesterday", color: "bg-red-200" },
+    { title: "Total Orders", value: "300", change: "+5% from yesterday", color: "bg-yellow-200" },
+    { title: "Product Sold", value: "5", change: "+12% from yesterday", color: "bg-green-200" },
+    { title: "New Customers", value: "8", change: "0.5% from yesterday", color: "bg-purple-200" },
+  ];
+
+  const revenueData = [
+    { day: "Monday", online: 15000, offline: 5000 },
+    { day: "Tuesday", online: 18000, offline: 7000 },
+    { day: "Wednesday", online: 12000, offline: 4000 },
+    { day: "Thursday", online: 20000, offline: 8000 },
+    { day: "Friday", online: 16000, offline: 6000 },
+    { day: "Saturday", online: 14000, offline: 3000 },
+    { day: "Sunday", online: 10000, offline: 2000 },
+  ];
+
+  const topProducts = [
+    { rank: "01", name: "Home Decor Range", popularity: 45, color: "bg-blue-500" },
+    { rank: "02", name: "Disney Princess Pink Bag", popularity: 25, color: "bg-green-500" },
+    { rank: "03", name: "Bathroom Essentials", popularity: 18, color: "bg-purple-500" },
+    { rank: "04", name: "Apple Smartwatches", popularity: 12, color: "bg-orange-500" },
   ];
 
   const formatDate = (dateString: string) => {
     try {
       return format(new Date(dateString), "MMM d, yyyy");
-    } catch (e) {
+    } catch {
       return dateString;
     }
   };
 
-  const { school } = useSchoolStore();
-  const recentStudents = analytics.recentStudents ?? [];
-  const recentEvents = analytics.recentEvents ?? [];
-
   return (
-    <div className="space-y-6">
-      {/* Stats Cards */}
-      {stats.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-          {stats.map((item, i) => {
-            const Icon = item.icon;
-            return (
-              <Card
-                key={i}
-                className="relative overflow-hidden hover:shadow-md transition-shadow border-l-4"
-                style={{ borderLeftColor: item.color.replace("bg-", "#") }}
-              >
-                <CardContent className="p-4">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <p className="text-sm text-muted-foreground mb-1">
-                        {item.title}
-                      </p>
-                      <p className="text-2xl font-semibold tracking-tight">
-                        {item.prefix && item.prefix}
-                        {item.count.toLocaleString()}
-                      </p>
-                    </div>
-                    <div
-                      className={`${item.color} bg-opacity-10 p-2 rounded-full`}
-                    >
-                      <Icon className={`h-5 w-5 ${item.textColor}`} />
-                    </div>
-                  </div>
-                  <Link
-                    href={item.href}
-                    className="mt-3 text-sm font-medium text-blue-500 hover:text-blue-600 transition-colors flex items-center gap-1"
-                  >
-                    View details →
-                  </Link>
-                </CardContent>
-              </Card>
-            );
-          })}
+    <div className="flex h-screen bg-gray-50">
+     
+
+      {/* Main Content */}
+      <div className="flex-1 p-6">
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Sales Summary */}
+          <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {salesSummary.map((item, i) => (
+              <div key={i} className={`p-4 rounded-lg shadow-md ${item.color}`}>
+                <p className="text-sm text-gray-600">{item.title}</p>
+                <p className="text-2xl font-bold mt-2">{item.value}</p>
+                <p className="text-xs text-gray-500 mt-1">{item.change}</p>
+                <button className="mt-2 text-xs text-gray-600 hover:underline">Export</button>
+              </div>
+            ))}
+          </div>
+
+          {/* Visitor Insights */}
+          <div className="p-4 bg-white rounded-lg shadow-md">
+            <h3 className="text-lg font-semibold mb-2">Visitor Insights</h3>
+            {/* Placeholder for chart - replace with actual chart component */}
+            <div className="h-40 bg-gray-100 rounded flex items-center justify-center">Chart Placeholder</div>
+            <p className="text-xs text-gray-500 mt-2">Loyal Customers | New Customers | Unique Customers</p>
+          </div>
         </div>
-      )}
 
-      {/* Tables Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Recent Students Table */}
-        <Card className="overflow-x-auto">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg font-medium">
-              <div className="flex items-center justify-between">
-                <h2>Recent Students</h2>
-                <Link
-                  href="/dashboard/students"
-                  className="text-sm font-medium text-blue-500 hover:text-blue-600 flex items-center gap-1"
-                >
-                  View all students →
-                </Link>
-              </div>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Gender</TableHead>
-                    <TableHead>Class</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {recentStudents.length > 0 ? (
-                    recentStudents.map((student) => (
-                      <TableRow key={student.id}>
-                        <TableCell className="font-medium">
-                          <div className="flex flex-col">
-                            <h2>{student.name}</h2>
-                            <h2 className="text-sm text-muted-foreground">
-                              {student.regNo}
-                            </h2>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            variant={
-                              student.gender === "MALE" ? "default" : "secondary"
-                            }
-                          >
-                            {student.gender.charAt(0) +
-                              student.gender.slice(1).toLowerCase()}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>{student.class.title}</TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={3} className="text-center py-4 text-muted-foreground">
-                        No Students
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+          {/* Total Revenue */}
+          <div className="p-4 bg-white rounded-lg shadow-md">
+            <h3 className="text-lg font-semibold mb-2">Total Revenue</h3>
+            {/* Placeholder for bar chart - replace with actual chart component */}
+            <div className="h-40 bg-gray-100 rounded flex items-center justify-center">Chart Placeholder</div>
+            <p className="text-xs text-gray-500 mt-2">Online Sales | Offline Sales</p>
+          </div>
 
-        {/* Recent Events Table */}
-        <Card className="overflow-x-auto">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg font-medium">
-              <div className="flex items-center justify-between">
-                <h2>Upcoming Events</h2>
-                <Link
-                  href={`/sch/${school?.slug}/customize/events`}
-                  className="text-sm font-medium text-blue-500 hover:text-blue-600 flex items-center gap-1"
-                >
-                  View all events →
-                </Link>
-              </div>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Event</TableHead>
-                    <TableHead>Location</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {recentEvents.length > 0 ? (
-                    recentEvents.map((event) => (
-                      <TableRow key={event.id}>
-                        <TableCell className="font-medium">
-                          <div className="flex flex-col">
-                            <h2>{event.title}</h2>
-                            <h2 className="text-sm text-muted-foreground">
-                              {formatDate(event.date)}
-                            </h2>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex flex-col">
-                            <h2>
-                              {event.startTime} - {event.endTime}
-                            </h2>
-                            <div className="flex items-center gap-1">
-                              <MapPin className="h-3 w-3 text-muted-foreground" />
-                              <span>{event.location}</span>
-                            </div>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={2} className="text-center py-4 text-muted-foreground">
-                        No Events Data
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
+          {/* Customer Satisfaction */}
+          <div className="p-4 bg-white rounded-lg shadow-md">
+            <h3 className="text-lg font-semibold mb-2">Customer Satisfaction</h3>
+            {/* Placeholder for line chart - replace with actual chart component */}
+            <div className="h-40 bg-gray-100 rounded flex items-center justify-center">Chart Placeholder</div>
+            <p className="text-xs text-gray-500 mt-2">Last Month | This Month</p>
+          </div>
+
+          {/* Target vs Reality */}
+          <div className="p-4 bg-white rounded-lg shadow-md">
+            <h3 className="text-lg font-semibold mb-2">Target vs Reality</h3>
+            <div className="space-y-2">
+              <p>Reality Sales: $8,823</p>
+              <p>Target Sales: $4,504</p>
+              <p>Commercial: 12,222</p>
             </div>
-          </CardContent>
-        </Card>
+            {/* Placeholder for bar chart - replace with actual chart component */}
+            <div className="h-40 bg-gray-100 rounded flex items-center justify-center">Chart Placeholder</div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+          {/* Top Products */}
+          <div className="p-4 bg-white rounded-lg shadow-md">
+            <h3 className="text-lg font-semibold mb-2">Top Products</h3>
+            <div className="space-y-4">
+              {topProducts.map((product, i) => (
+                <div key={i} className="flex justify-between items-center">
+                  <div>
+                    <p className="text-sm">{product.rank} {product.name}</p>
+                  </div>
+                  <div className={`w-1/2 h-2 bg-${product.color.slice(3)} rounded`}></div>
+                  <p className="text-sm">{product.popularity}%</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Sales Mapping by Country */}
+          <div className="p-4 bg-white rounded-lg shadow-md">
+            <h3 className="text-lg font-semibold mb-2">Sales Mapping by Country</h3>
+            {/* Placeholder for map - replace with actual map component */}
+            <div className="h-40 bg-gray-100 rounded flex items-center justify-center">Map Placeholder</div>
+          </div>
+
+          {/* Volume vs Service Level */}
+          <div className="p-4 bg-white rounded-lg shadow-md">
+            <h3 className="text-lg font-semibold mb-2">Volume vs Service Level</h3>
+            {/* Placeholder for bar chart - replace with actual chart component */}
+            <div className="h-40 bg-gray-100 rounded flex items-center justify-center">Chart Placeholder</div>
+            <p className="text-xs text-gray-500 mt-2">Volume | Services</p>
+          </div>
+        </div>
       </div>
     </div>
   );

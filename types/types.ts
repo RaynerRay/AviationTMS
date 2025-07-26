@@ -388,6 +388,7 @@ export interface TeacherCreateProps {
   subjectIds?: string[]; // to link to Subject[] if handled relationally
 }
 export interface Teacher {
+  id: string;
   userId: string;
   schoolId: string;
   schoolName: string;
@@ -693,8 +694,8 @@ export interface CreateFlightSession {
   landingsNight: number;
 
   status: SessionStatus;
-  startTime: Date | string;
-  endTime: Date | string;
+  startTime: Date ;
+  endTime: Date ;
   durationHours: number;
 
   teacherFeedback?: string;
@@ -728,15 +729,88 @@ export interface CreateFlightSession {
   actualGroundHours?: number;
 }
 
-
+export type CreateFlightSessionInput = {
+  // Basic Session Information
+  sessionType: SessionType;
+  date: Date; // HTML date input format
+  flightType: string;
+  detailsOfFlight: string;
+  
+  // Time and Duration
+  startTime: Date; // HTML datetime-local format
+  endTime: Date; // HTML datetime-local format
+  
+  // Personnel
+  studentId: string;
+  teacherId: string;
+  
+  // Aircraft/Simulator Information
+  aircraftId: string;
+  simulatorId?: string;
+  aircraftType?: string;
+  registrationNumber: string;
+  
+  // Flight Route
+  departureAirport: string;
+  arrivalAirport: string;
+  
+  // Flight Time Breakdown
+  dayHours?: number;
+  nightHours?: number;
+  instrumentHours?: number;
+  singleEngineTime?: number;
+  multiEngineTime?: number;
+  
+  // Detailed Flight Times
+  actualTime: number;
+  singleEngineDay: number;
+  singleEngineNight: number;
+  multiEngineDay: number;
+  multiEngineNight: number;
+  other: number;
+  
+  // Instrument Training
+  ifrApproaches: number;
+  instrumentTime: number;
+  instrumentTimeSe: number;
+  instrumentTimeMe: number;
+  
+  // Simulator Time (FSTD - Flight Simulation Training Device)
+  fstdTime: number;
+  fstdDual: number;
+  fstdPic: number;
+  fstdPicPractice: number;
+  
+  // Takeoffs and Landings
+  takeOffsDay: number;
+  takeOffsNight: number;
+  landingsDay: number;
+  landingsNight: number;
+  
+  // Pilot Role and Operation
+  pilotRole: PilotRole;
+  crewOperation: CrewOperation;
+  
+  // Feedback and Verification
+  teacherFeedback?: string;
+  verifiedByInstructor: boolean;
+  
+  // Status
+  status: SessionStatus;
+  
+  // Actual Hours (for post-flight logging)
+  actualFlightHours?: number;
+  actualSimulatorHours?: number;
+  actualGroundHours?: number;
+};
 export interface FlightSessionModel {
   id: string;
   sessionId: string;
   sessionType: SessionType;
-  date: Date | null;
-  flightType: string | null;
+  date: Date ;
+  flightType: string ;
 
-  detailsOfFlight: string | null;
+  detailsOfFlight: string ;
 
   ifrApproaches: number;
   instrumentTime: number;
@@ -765,20 +839,20 @@ export interface FlightSessionModel {
   status: SessionStatus;
   startTime: Date;
   endTime: Date;
-  durationHours: number | null;
+  durationHours: number ;
   teacherFeedback: string | null;
   studentFeedback: string | null;
   verifiedByInstructor: boolean;
 
-  aircraftId: string | null;
+  aircraftId: string ;
   aircraft?: AircraftModel | null;
   aircraftType: string | null;
-  registrationNumber: string | null;
+  registrationNumber: string ;
 
-  departureAirport: string | null;
-  arrivalAirport: string | null;
+  departureAirport: string ;
+  arrivalAirport: string ;
 
-  totalFlightTime: number | null;
+  // totalFlightTime: number | null;
   dayHours: number | null;
   nightHours: number | null;
   instrumentHours: number | null;
@@ -789,9 +863,9 @@ export interface FlightSessionModel {
   crewOperation: CrewOperation | null;
 
   studentId: string;
-  student: Student// Or a proper `StudentModel` interface if you define one
+  student: Student
   teacherId: string;
-  teacher: TeacherCreateProps; // Or `TeacherModel`
+  teacher: TeacherCreateProps; 
   simulatorId: string | null;
   simulator?: SimulatorModel | null;
 
@@ -814,7 +888,7 @@ export enum PilotRole {
   DUAL = "DUAL",
   COPILOT = "COPILOT",
   PICUS = "PICUS",
-  COMMD_PRACTICE = "COMMD_PRACTICE",
+  COMMD_PRACTICE = "COMMAND_PRACTICE",
 }
 export type CreateMaintenanceLogProps = {
   aircraftId: string;

@@ -1,5 +1,4 @@
 import React from "react";
-import PortalAnalytics from "@/components/portal/PortalAnalytics";
 import { getServerUser } from "@/actions/auth";
 import { WelcomeBanner } from "@/components/dashboard/welcome-message";
 import { redirect } from "next/navigation";
@@ -8,6 +7,7 @@ import { getTeacherAnalytics } from "@/actions/analytics";
 
 export default async function Portal() {
   const user = await getServerUser();
+  
   if (!user) {
     redirect("/login");
   }

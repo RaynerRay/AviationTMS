@@ -1,6 +1,6 @@
 import { getServerSchool, getServerUser } from "@/actions/auth";
 import { getAllPeriods } from "@/actions/periods";
-import { getStudentById, getStudentByUserId } from "@/actions/students";
+import {  getStudentByUserId } from "@/actions/students";
 import StudentDetailPage from "@/components/dashboard/StudentDetailPage";
 import { notFound } from "next/navigation";
 import React from "react";

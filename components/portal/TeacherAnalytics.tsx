@@ -169,7 +169,11 @@ export default function TeacherAnalytics({
                     </TableRow>
                   ))
                 ) : (
-                  <p className="p-4 text-center">No Students</p>
+                  <tr>
+                  <td colSpan={999} className="p-4 text-center">
+                    No data
+                  </td>
+                </tr>
                 )}
               </TableBody>
             </Table>
@@ -233,7 +237,11 @@ export default function TeacherAnalytics({
                     );
                   })
                 ) : (
-                  <p className="p-4 text-center">No Events Data</p>
+                  <tr>
+    <td colSpan={999} className="p-4 text-center">
+      No data
+    </td>
+  </tr>
                 )}
               </TableBody>
             </Table>
