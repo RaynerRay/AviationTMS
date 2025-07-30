@@ -9,7 +9,6 @@ fix sessionType
 ## add logs
 ## redirect after creating new flight session
 ## change flight sessions time inputs
-group takeoof day and landing
 prevent student from verifying
 add verification by instructor
-## add snags
+## edit snags, incidents, admin only

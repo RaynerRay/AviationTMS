@@ -11,7 +11,7 @@ export default async function Dashboard() {
   if (!user) {
     redirect("/login");
   }
-  console.log(school?.id);
+  
   return (
     <>
       {/* <WelcomeBanner

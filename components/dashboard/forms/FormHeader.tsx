@@ -33,20 +33,20 @@ export default function FormHeader({
           onClick={goBack}
           variant="outline"
           size="icon"
-          className="h-7 w-7"
+          className="h-8 w-12 text-gray-50 bg-blue-700"
           type="button"
         >
           <ChevronLeft className="h-4 w-4" />
-          <span className="sr-only">Back</span>
+          <span className="sr-only ">Back</span>
         </Button>
         <h1 className="flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">
           {editingId ? "Update" : "Create"} {title}
         </h1>
       </div>
       <div className="flex items-center justify-center gap-2">
-        <div className="hidden md:block">
+        {/* <div className="hidden md:block">
           <CloseButton href={href} parent={parent} />
-        </div>
+        </div> */}
         <SubmitButton
           size={"sm"}
           title={editingId ? `Update ${title}` : `Save ${title}`}

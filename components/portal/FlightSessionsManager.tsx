@@ -2,21 +2,17 @@
 import React, { useState, useEffect } from "react";
 import { 
   Plane, 
- 
   MessageCircle, 
   FileClock,
   ChevronDown,
   ChevronUp,
   Search,
   Plus,
-
   ArrowLeft
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
-import { AircraftModel, CreateFlightSession, FlightSessionModel, SessionStatus, SessionType, SimulatorModel, Student, Teacher } from "@/types/types";
-import FlightSessionForm from "../dashboard/forms/operations/FlightSessionForm";
-
-
+import { AircraftModel, FlightSessionModel, SessionStatus, SessionType, SimulatorModel, Student, Teacher } from "@/types/types";
 
 interface CollapsibleSectionProps {
   title: React.ReactNode;
@@ -26,7 +22,6 @@ interface CollapsibleSectionProps {
 
 interface FlightSessionsManagerProps {
   flightSessions: FlightSessionModel[];
-  onSubmit: (data: CreateFlightSession) => void;
   aircrafts: AircraftModel[];
   students: Student[];
   teachers: Teacher[];
@@ -63,13 +58,13 @@ const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
 
 const FlightSessionsManager: React.FC<FlightSessionsManagerProps> = ({
   flightSessions,
-  onSubmit,
   aircrafts,
   students,
   teachers,
   simulators
 }) => {
-  const [currentView, setCurrentView] = useState<'list' | 'create' | 'details'>('list');
+  const router = useRouter();
+  const [currentView, setCurrentView] = useState<'list' | 'details'>('list');
   const [selectedSession, setSelectedSession] = useState<FlightSessionModel | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filteredSessions, setFilteredSessions] = useState<FlightSessionModel[]>(flightSessions);
@@ -198,6 +193,10 @@ const FlightSessionsManager: React.FC<FlightSessionsManagerProps> = ({
     setCurrentView('details');
   };
 
+  const handleCreateSession = () => {
+    router.push('/portal/student/flight-sessions/new-session');
+  };
+
   const FormInput: React.FC<{
     label: string;
     value: string | number | null;
@@ -236,41 +235,6 @@ const FlightSessionsManager: React.FC<FlightSessionsManagerProps> = ({
   // Render different views based on currentView state
   const renderContent = () => {
     switch (currentView) {
-      case 'create':
-        return (
-          <div className="h-full bg-white">
-            <div className="border-b border-gray-200 px-6 py-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <button
-                    onClick={() => setCurrentView('list')}
-                    className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
-                  >
-                    <ArrowLeft className="w-4 h-4" />
-                    Back to Sessions
-                  </button>
-                  <div className="w-px h-6 bg-gray-300"></div>
-                  <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                    <Plus className="w-6 h-6" />
-                    Create Flight Session
-                  </h1>
-                </div>
-              </div>
-            </div>
-            <div className="overflow-y-auto h-[calc(100vh-80px)]">
-              <div className="p-6">
-                <FlightSessionForm
-                  onSubmit={async (data) => onSubmit(data)}
-                  aircrafts={aircrafts}
-                  students={students}
-                  teachers={teachers}
-                  simulators={simulators}
-                />
-              </div>
-            </div>
-          </div>
-        );
-
       case 'details':
         return selectedSession ? (
           <div className="h-full bg-white">
@@ -345,15 +309,12 @@ const FlightSessionsManager: React.FC<FlightSessionsManagerProps> = ({
                 }
                 defaultOpen={true}
               >
-                {/* <FormInput label="Total Flight Time" value={selectedSession.totalFlightTime} type="number" /> */}
                 <FormInput label="Day Hours" value={selectedSession.dayHours} type="number" />
                 <FormInput label="Night Hours" value={selectedSession.nightHours} type="number" />
                 <FormInput label="Instrument Hours" value={selectedSession.instrumentHours} type="number" />
                 <FormInput label="Single Engine Time" value={selectedSession.singleEngineTime} type="number" />
                 <FormInput label="Multi Engine Time" value={selectedSession.multiEngineTime} type="number" />
               </CollapsibleSection>
-
-              {/* Additional sections can be added here similar to the original form */}
 
               {/* Feedback */}
               <div>
@@ -383,7 +344,7 @@ const FlightSessionsManager: React.FC<FlightSessionsManagerProps> = ({
                     Flight Sessions
                   </h1>
                   <button
-                    onClick={() => setCurrentView('create')}
+                    onClick={handleCreateSession}
                     className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
                   >
                     <Plus className="w-4 h-4" />
@@ -442,7 +403,7 @@ const FlightSessionsManager: React.FC<FlightSessionsManagerProps> = ({
                     </p>
                     {!searchTerm && activeFilter === "all" && (
                       <button
-                        onClick={() => setCurrentView('create')}
+                        onClick={handleCreateSession}
                         className="mt-4 flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
                       >
                         <Plus className="w-4 h-4" />

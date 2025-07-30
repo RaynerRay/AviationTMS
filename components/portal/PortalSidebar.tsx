@@ -97,10 +97,21 @@ export function renderLoggedInUserLinks(role: UserRole): NavLink[] {
         href: "/portal/teacher/flight-sessions",
         icon: Plane,
       },
+
       {
         title: "Students",
         href: "/portal/teacher/students",
         icon: GraduationCap,
+      },
+      {
+        title: "Snags",
+        href: "/portal/snags",
+        icon: Plane,
+      },
+      {
+        title: "Incidents",
+        href: "/portal/incidents",
+        icon: Plane,
       },
       {
         title: "Mark Attendance",
@@ -180,6 +191,16 @@ export function renderLoggedInUserLinks(role: UserRole): NavLink[] {
       {
         title: "Flight Sessions",
         href: "/portal/student/flight-sessions",
+        icon: Plane,
+      },
+      {
+        title: "Snags",
+        href: "/portal/snags",
+        icon: Plane,
+      },
+      {
+        title: "Incidents",
+        href: "/portal/incidents",
         icon: Plane,
       },
       {

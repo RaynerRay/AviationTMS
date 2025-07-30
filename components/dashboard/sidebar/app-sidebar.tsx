@@ -68,6 +68,15 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
       ],
     },
     {
+      title: "Safety",
+      url: "/safety/",
+      icon: "👥",
+      items: [
+        { title: "Snags", url: "/dashboard/safety/incidents" },
+        // { title: "Fees", url: "/dashboard/finance/fees" },
+      ],
+    },
+    {
       title: "Attendance",
       url: "/dashboard/attendance",
       icon: "✔️",
@@ -99,6 +108,17 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
         { title: "Examinations", url: "/dashboard/academics/exams" },
         { title: "Assignments", url: "/academics/assignments" },
         { title: "Report Cards", url: "/dashboard/academics/reports" },
+      ],
+    },
+    {
+      title: "Maintenance",
+      url: "/maintenance",
+      icon: "👥",
+      items: [
+        { title: "Snags", url: "/dashboard/maintenance/snags" },
+        // { title: "Attendance", url: "/staff/attendance" },
+        // { title: "Leave Management", url: "/staff/leave" },
+        // { title: "Performance", url: "/staff/performance" },
       ],
     },
     {

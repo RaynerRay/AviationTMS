@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import FormFooter from "../FormFooter";
 import FormHeader from "../FormHeader";
@@ -76,8 +76,6 @@ interface Teacher {
     lastName: string;
   }
 
-
-
 interface SimulatorModel {
   id: string;
   name: string;
@@ -110,6 +108,24 @@ export default function FlightSessionForm({
   onSubmit,
 }: FlightSessionFormProps) {
   
+  // Time dropdown options
+  const hourOptions = Array.from({ length: 24 }, (_, i) => ({
+    label: i.toString().padStart(2, '0'),
+    value: i.toString()
+  }));
+
+  const minuteOptions = Array.from({ length: 60 }, (_, i) => ({
+    label: i.toString().padStart(2, '0'),
+    value: i.toString()
+  }));
+
+  // Time state variables
+  const [startHour, setStartHour] = useState<any>(hourOptions[8]); // Default 8 AM
+  const [startMinute, setStartMinute] = useState<any>(minuteOptions[0]); // Default :00
+  const [endHour, setEndHour] = useState<any>(hourOptions[10]); // Default 10 AM
+  const [endMinute, setEndMinute] = useState<any>(minuteOptions[0]); // Default :00
+  const [calculatedDuration, setCalculatedDuration] = useState<number>(2.0);
+
   // Convert arrays to select options
   const studentOptions = (students ?? []).map((student) => ({
     label: student.name || `${student.firstName} ${student.lastName}`,
@@ -239,28 +255,49 @@ export default function FlightSessionForm({
   // Watch session type to conditionally show fields
   const watchedSessionType = watch("sessionType");
 
+  // Auto-calculate duration when time changes
+  useEffect(() => {
+    if (startHour && startMinute && endHour && endMinute) {
+      const startTotalMinutes = parseInt(startHour.value) * 60 + parseInt(startMinute.value);
+      const endTotalMinutes = parseInt(endHour.value) * 60 + parseInt(endMinute.value);
+      
+      let duration = 0;
+      if (endTotalMinutes > startTotalMinutes) {
+        duration = (endTotalMinutes - startTotalMinutes) / 60;
+      } else if (endTotalMinutes < startTotalMinutes) {
+        // Handle overnight flights
+        duration = ((24 * 60) - startTotalMinutes + endTotalMinutes) / 60;
+      }
+      
+      setCalculatedDuration(duration);
+    }
+  }, [startHour, startMinute, endHour, endMinute]);
+
   async function saveFlightSession(data: CreateFlightSession) {
     try {
       setLoading(true);
 
-      const normalizeToISO = (dateStr: string): string => {
-        if (!dateStr) return "";
-        if (dateStr.includes("Z") || dateStr.includes("+")) return dateStr;
-        return dateStr + ":00Z"; // Ensure ISO format
-      };
-      
-      data.startTime = new Date(normalizeToISO(data.startTime as unknown as string));
-      data.endTime = new Date(normalizeToISO(data.endTime as unknown as string));
-      
-      const diffMs = data.endTime.getTime() - data.startTime.getTime();
-      if (!isNaN(diffMs)) {
-        data.durationHours = +(diffMs / (1000 * 60 * 60)).toFixed(1);
-      
-    } else {
-      toast.error("Invalid start or end time.");
-      setLoading(false);
-      return;
-    }
+      // Combine date with selected time dropdowns
+      const dateStr = data.date as unknown as string;
+
+      if (!dateStr || !startHour?.value || !startMinute?.value || !endHour?.value || !endMinute?.value) {
+        toast.error("Please fill in date and time fields.");
+        setLoading(false);
+        return;
+      }
+
+      // Create time strings from dropdowns
+      const startTimeStr = `${startHour.value.padStart(2, '0')}:${startMinute.value.padStart(2, '0')}`;
+      const endTimeStr = `${endHour.value.padStart(2, '0')}:${endMinute.value.padStart(2, '0')}`;
+
+      // Create full datetime strings
+      const startDateTime = `${dateStr}T${startTimeStr}:00`;
+      const endDateTime = `${dateStr}T${endTimeStr}:00`;
+
+      data.startTime = new Date(startDateTime);
+      data.endTime = new Date(endDateTime);
+      data.durationHours = calculatedDuration;
+
       // Set selected values
       data.sessionType = selectedSessionType?.value ?? SessionType.FLIGHT;
       data.flightType = selectedFlightType?.value ?? "";
@@ -294,7 +331,6 @@ export default function FlightSessionForm({
       data.landingsDay = Number(data.landingsDay);
       data.landingsNight = Number(data.landingsNight);
       
-      
       if (data.dayHours !== undefined) data.dayHours = Number(data.dayHours);
       if (data.nightHours !== undefined) data.nightHours = Number(data.nightHours);
       if (data.instrumentHours !== undefined) data.instrumentHours = Number(data.instrumentHours);
@@ -303,6 +339,7 @@ export default function FlightSessionForm({
       if (data.actualFlightHours !== undefined) data.actualFlightHours = Number(data.actualFlightHours);
       if (data.actualSimulatorHours !== undefined) data.actualSimulatorHours = Number(data.actualSimulatorHours);
       if (data.actualGroundHours !== undefined) data.actualGroundHours = Number(data.actualGroundHours);
+      
       const normalizeToBoolean = (val: string | boolean | undefined): boolean => {
         if (typeof val === "string") return val === "true";
         return Boolean(val); // covers boolean or undefined
@@ -340,7 +377,7 @@ export default function FlightSessionForm({
   return (
     <form className="" onSubmit={handleSubmit(saveFlightSession)}>
       <FormHeader
-        href="/flight-sessions"
+        href="/portal/student/flight-sessions"
         parent=""
         title="Flight Session"
         editingId={editingId}
@@ -377,22 +414,64 @@ export default function FlightSessionForm({
                   type="date"
                 />
               </div>
-              <div className="grid md:grid-cols-2 gap-3">
-                <TextInput
-                  register={register}
-                  errors={errors}
-                  label="Start Time"
-                  name="startTime"
-                  type="datetime-local"
-                />
-                <TextInput
-                  register={register}
-                  errors={errors}
-                  label="End Time"
-                  name="endTime"
-                  type="datetime-local"
-                />
+              
+              {/* Time Selection with Dropdowns */}
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Start Time</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <FormSelectInput
+                      label="Hour"
+                      options={hourOptions}
+                      option={startHour}
+                      setOption={setStartHour}
+                      isSearchable={false}
+                    />
+                    <FormSelectInput
+                      label="Minute"
+                      options={minuteOptions}
+                      option={startMinute}
+                      setOption={setStartMinute}
+                      isSearchable={false}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">End Time</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <FormSelectInput
+                      label="Hour"
+                      options={hourOptions}
+                      option={endHour}
+                      setOption={setEndHour}
+                      isSearchable={false}
+                    />
+                    <FormSelectInput
+                      label="Minute"
+                      options={minuteOptions}
+                      option={endMinute}
+                      setOption={setEndMinute}
+                      isSearchable={false}
+                    />
+                  </div>
+                </div>
               </div>
+              
+              {/* Duration Display */}
+              <div className="grid md:grid-cols-1 lg:grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Duration (hours)
+                  </label>
+                  <input
+                    type="text"
+                    value={calculatedDuration.toFixed(1)}
+                    readOnly
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-700 focus:outline-none"
+                  />
+                </div>
+              </div>
+              
               <div className="grid md:grid-cols-1 gap-3">
                 <TextArea
                   register={register}
@@ -691,6 +770,14 @@ export default function FlightSessionForm({
                   type="number"
                   placeholder="0"
                 />
+                  <TextInput
+                  register={register}
+                  errors={errors}
+                  label="Landings Day"
+                  name="landingsDay"
+                  type="number"
+                  placeholder="0"
+                />
                 <TextInput
                   register={register}
                   errors={errors}
@@ -699,14 +786,7 @@ export default function FlightSessionForm({
                   type="number"
                   placeholder="0"
                 />
-                <TextInput
-                  register={register}
-                  errors={errors}
-                  label="Landings Day"
-                  name="landingsDay"
-                  type="number"
-                  placeholder="0"
-                />
+              
                 <TextInput
                   register={register}
                   errors={errors}
@@ -723,64 +803,6 @@ export default function FlightSessionForm({
           <div className="bg-white p-6 rounded-lg border">
             <h3 className="text-lg font-semibold mb-4 text-gray-900">Post-Flight Summary</h3>
             <div className="grid gap-6">
-              {/* <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
-                <TextInput
-                  register={register}
-                  errors={errors}
-                  label="Single Engine Time"
-                  name="singleEngineTime"
-                  type="number"
-                 
-                  placeholder="0.0"
-                />
-                <TextInput
-                  register={register}
-                  errors={errors}
-                  label="Multi Engine Time"
-                  name="multiEngineTime"
-                  type="number"
-                 
-                  placeholder="0.0"
-                />
-                <TextInput
-                  register={register}
-                  errors={errors}
-                  label="Other Time"
-                  name="other"
-                  type="number"
-                 
-                  placeholder="0.0"
-                />
-              </div>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
-                <TextInput
-                  register={register}
-                  errors={errors}
-                  label="Actual Flight Hours"
-                  name="actualFlightHours"
-                  type="number"
-                 
-                  placeholder="0.0"
-                />
-                <TextInput
-                  register={register}
-                  errors={errors}
-                  label="Actual Simulator Hours"
-                  name="actualSimulatorHours"
-                  type="number"
-                 
-                  placeholder="0.0"
-                />
-                <TextInput
-                  register={register}
-                  errors={errors}
-                  label="Actual Ground Hours"
-                  name="actualGroundHours"
-                  type="number"
-                 
-                  placeholder="0.0"
-                />
-              </div> */}
               <div className="grid md:grid-cols-1 gap-3">
                 <TextArea
                   register={register}
@@ -819,9 +841,8 @@ export default function FlightSessionForm({
         </div>
       </div>
 
-
       <FormFooter
-        href="/flight-sessions"
+        href="/portal/student/flight-sessions"
         editingId={editingId}
         loading={loading}
         title="Flight Session"
